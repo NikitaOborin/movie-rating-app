@@ -1,4 +1,4 @@
-package com.project.model;
+package com.project.movieratingapp.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    Integer id;
-    String email;
-    String login;
+public class Film {
+    Long id;
     String name;
-    LocalDate birthday;
+    String description;
+    LocalDate releaseDate;
+    Integer duration;
 }
