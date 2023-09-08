@@ -1,6 +1,9 @@
 package com.project.movieratingapp.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +14,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    Long id;
-    String email;
-    String login;
-    String name;
+    private Long id;
+
+    @Email
+    private String email;
+
+    @NotBlank
+    private String login;
+
+    private String name; // может быть пустым, в таком случае использовать логин
+
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate birthday;
+    @PastOrPresent
+    private LocalDate birthday;
 }

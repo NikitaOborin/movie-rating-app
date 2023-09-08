@@ -1,10 +1,8 @@
 package com.project.movieratingapp.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.project.movieratingapp.validation.BirthdayMovie;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +13,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Film {
-    Long id;
-    String name;
-    String description;
+    private Long id;
+
+    @NotEmpty
+    private String name;
+
+    @Size (min = 1, max = 200)
+    private String description;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate releaseDate;
-    Integer duration;
+    @PastOrPresent
+    @BirthdayMovie // кастомная аннотация
+    private LocalDate releaseDate;
+
+    @Positive
+    private Integer duration;
 }

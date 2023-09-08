@@ -2,11 +2,14 @@ package com.project.movieratingapp.controller;
 
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.repository.FilmRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -19,12 +22,12 @@ public class FilmController {
     }
 
     @PostMapping()
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         return filmRepository.addFilm(film);
     }
 
-    @PatchMapping()
-    public Film updateFilm(@RequestBody Film film) {
+    @PutMapping()
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmRepository.updateFilm(film);
     }
 }

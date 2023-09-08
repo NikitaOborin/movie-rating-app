@@ -1,13 +1,13 @@
 package com.project.movieratingapp.repository;
 
 import com.project.movieratingapp.model.Film;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Component
+@Repository
 public class FilmInMemoryRepository implements FilmRepository {
     HashMap<Long, Film> films = new HashMap<>();
     private long generatorId;
