@@ -1,6 +1,7 @@
 package com.project.movieratingapp.repository;
 
 import com.project.movieratingapp.model.User;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class UserInMemoryRepository implements UserRepository {
     @Override
     public User addUser(User user) {
         user.setId(generateId());
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
         users.put(generatorId, user);
         return user;
     }
@@ -27,10 +31,10 @@ public class UserInMemoryRepository implements UserRepository {
     public User updateUser(User user) {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
+            return user;
         } else {
-            addUser(user);
+            throw new ValidationException();
         }
-        return user;
     }
 
     @Override

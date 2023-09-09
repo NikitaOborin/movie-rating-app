@@ -1,6 +1,7 @@
 package com.project.movieratingapp.repository;
 
 import com.project.movieratingapp.model.Film;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -27,10 +28,10 @@ public class FilmInMemoryRepository implements FilmRepository {
     public Film updateFilm(Film film) {
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
+            return film;
         } else {
-            addFilm(film);
+            throw new ValidationException();
         }
-        return film;
     }
 
     @Override
