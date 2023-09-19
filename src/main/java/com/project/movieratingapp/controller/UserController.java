@@ -15,8 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserController(@Autowired UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping()
     public List<User> getUsers() {

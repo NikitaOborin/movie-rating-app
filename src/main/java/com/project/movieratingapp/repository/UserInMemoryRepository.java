@@ -1,7 +1,7 @@
 package com.project.movieratingapp.repository;
 
+import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.User;
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @Repository
 public class UserInMemoryRepository implements UserRepository {
-    HashMap<Long, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
     private long generatorId;
 
     private long generateId() {
@@ -38,7 +38,7 @@ public class UserInMemoryRepository implements UserRepository {
             users.put(user.getId(), user);
             return user;
         } else {
-            throw new ValidationException("ValidationException");
+            throw new NotFoundException(user + " not found");
         }
     }
 

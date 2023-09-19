@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Film {
     private Long id;
 

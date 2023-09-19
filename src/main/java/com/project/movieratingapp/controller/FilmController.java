@@ -15,8 +15,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    @Autowired
-    FilmRepository filmRepository;
+    private final FilmRepository filmRepository;
+
+    public FilmController(@Autowired FilmRepository filmRepository) {
+        this.filmRepository = filmRepository;
+    }
 
     @GetMapping()
     public List<Film> getFilms() {

@@ -1,7 +1,7 @@
 package com.project.movieratingapp.repository;
 
+import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @Repository
 public class FilmInMemoryRepository implements FilmRepository {
-    HashMap<Long, Film> films = new HashMap<>();
+    private final HashMap<Long, Film> films = new HashMap<>();
     private long generatorId;
 
     private long generateId() {
@@ -34,7 +34,7 @@ public class FilmInMemoryRepository implements FilmRepository {
             films.put(film.getId(), film);
             return film;
         } else {
-            throw new ValidationException("ValidationException");
+            throw new NotFoundException(film + " not found");
         }
     }
 
