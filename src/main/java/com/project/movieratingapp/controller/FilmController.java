@@ -17,7 +17,8 @@ import java.util.List;
 public class FilmController {
     private final FilmRepository filmRepository;
 
-    public FilmController(@Autowired FilmRepository filmRepository) {
+    @Autowired
+    public FilmController(FilmRepository filmRepository) {
         this.filmRepository = filmRepository;
     }
 

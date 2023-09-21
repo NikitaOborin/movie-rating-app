@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
 public class UserInMemoryRepository implements UserRepository {
-    private final HashMap<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private long generatorId;
 
     private long generateId() {
@@ -46,5 +47,15 @@ public class UserInMemoryRepository implements UserRepository {
     public List<User> getUsers() {
         log.info("getUsers repository: start");
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        log.info("getUserById repository: start");
+        if (users.containsKey(id)) {
+            return users.get(id);
+        } else {
+            throw new NotFoundException("user with id = " + id + " not found");
+        }
     }
 }

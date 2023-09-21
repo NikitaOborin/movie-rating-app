@@ -1,6 +1,6 @@
 package com.project.movieratingapp.validation;
 
-import jakarta.validation.Constraint;
+import  jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
