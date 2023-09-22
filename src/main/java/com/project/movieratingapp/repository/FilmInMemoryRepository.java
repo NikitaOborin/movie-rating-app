@@ -44,4 +44,12 @@ public class FilmInMemoryRepository implements FilmRepository {
         log.info("getFilms repository: start");
         return new ArrayList<>(films.values());
     }
+
+    @Override
+    public Film getFilmById(Long id) {
+        log.info("getFilmById repository: start");
+        return films.get(id);
+    }
+
+
 }

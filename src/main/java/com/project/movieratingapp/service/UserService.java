@@ -2,9 +2,11 @@ package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,36 +23,73 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Long addFriend(User user, User newFriend) {
-        log.info("addFriend userService: start with {}, {}", user, newFriend);
+    public List<User> getUsers() {
+        log.info("getUsers userService: start");
+        return userRepository.getUsers();
+    }
+
+    public User addUser(User user) {
+        log.info("addUser userService: start with {}", user);
+        return userRepository.addUser(user);
+    }
+
+    public User updateUser(User user) {
+        log.info("updateUser userService: start with {}", user);
+        return userRepository.updateUser(user);
+    }
+
+    public User getUserById(Long userId) {
+        log.info("getUserById userService: start with {}", userId);
+        return userRepository.getUserById(userId);
+    }
+
+    public User addFriend(Long userId, Long friendId) {
+        log.info("addFriend userService: start with {}, {}", userId, friendId);
+        User user = userRepository.getUserById(userId);
         if (user.getFriends() != null) {
-            log.info("addFriend userService: list friends for user equals null");
-            user.getFriends().add(newFriend.getId());
+            user.getFriends().add(friendId);
         } else {
+            log.info("addFriend userService: user friends list equals null");
             Set<Long> friendsId = new HashSet<>();
-            friendsId.add(newFriend.getId());
+            friendsId.add(friendId);
             user.setFriends(friendsId);
         }
 
-        if (newFriend.getFriends() != null) {
-            newFriend.getFriends().add(user.getId());
+        User friend = userRepository.getUserById(friendId);
+        if (friend.getFriends() != null) {
+            friend.getFriends().add(user.getId());
         } else {
-            log.info("addFriend userService: list friends for newFriend equals null");
+            log.info("addFriend userService: newFriend friends list equals null");
             Set<Long> friendsId = new HashSet<>();
             friendsId.add(user.getId());
-            newFriend.setFriends(friendsId);
+            friend.setFriends(friendsId);
         }
-        return newFriend.getId();
+        return user;
     }
 
-    public void deleteFriend(User user, User friend) {
-        log.info("deleteFriend userService: start with {}, {}", user, friend);
-        user.getFriends().remove(friend.getId());
-        friend.getFriends().remove(user.getId());
+    public User deleteFriend(Long userId, Long friendId) {
+        log.info("deleteFriend userService: start with {}, {}", userId, friendId);
+        User user = userRepository.getUserById(userId);
+        user.getFriends().remove(friendId);
+        userRepository.getUserById(friendId).getFriends().remove(user.getId());
+        return user;
     }
 
-    public List<User> getMutualFriends(User user, User otherUser) {
-        log.info("getMutualFriends userService: start with {}, {}", user, otherUser);
+    public List<User> getUserFriends(Long userId) {
+        User user = userRepository.getUserById(userId);
+        List<Long> userFriendsId = user.getFriends().stream().toList();
+        List<User> userFriends = new ArrayList<>();
+
+        for (Long id : userFriendsId) {
+            userFriends.add(userRepository.getUserById(id));
+        }
+        return userFriends;
+    }
+
+    public List<User> getMutualFriends(Long userId, Long otherUserId) {
+        log.info("getMutualFriends userService: start with {}, {}", userId, otherUserId);
+        User user = userRepository.getUserById(userId);
+        User otherUser = userRepository.getUserById(otherUserId);
         Set<Long> userFriendsId = user.getFriends();
         Set<Long> otherUserFriendsId = otherUser.getFriends();
         List<Long> mutualFriendsId = new ArrayList<>();

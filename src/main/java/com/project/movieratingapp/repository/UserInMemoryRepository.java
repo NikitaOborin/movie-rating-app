@@ -50,12 +50,12 @@ public class UserInMemoryRepository implements UserRepository {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(Long userId) {
         log.info("getUserById repository: start");
-        if (users.containsKey(id)) {
-            return users.get(id);
+        if (users.containsKey(userId)) {
+            return users.get(userId);
         } else {
-            throw new NotFoundException("user with id = " + id + " not found");
+            throw new NotFoundException("user with id = " + userId + " not found");
         }
     }
 }

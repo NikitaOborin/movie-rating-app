@@ -1,7 +1,7 @@
 package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.UserInMemoryRepository;
+import com.project.movieratingapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ class UserServiceTest {
     private User user2;
     private User user3;
     private final UserService userService;
-    private final UserInMemoryRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    UserServiceTest(UserService userService, UserInMemoryRepository repository) {
+    UserServiceTest(UserService userService, UserRepository userRepository) {
         this.userService = userService;
-        this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     @BeforeEach
@@ -48,31 +48,32 @@ class UserServiceTest {
         user3.setBirthday(LocalDate.of(2003, 3, 3));
         user3.setLogin("user3Login");
         user3.setEmail("user3@mail.ru");
+
+        userRepository.addUser(user1);
+        userRepository.addUser(user2);
+        userRepository.addUser(user3);
     }
 
     @Test
     void shouldSuccessAddFriend() {
-        userService.addFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
         assertEquals(user1.getFriends().size(), 1, "user не имеет друзей");
         assertEquals(user2.getFriends().size(), 1, "otherUser не имеет друзей");
     }
 
     @Test
     void shouldSuccessDeleteFriend() {
-        userService.addFriend(user1, user2);
-        userService.deleteFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.deleteFriend(user1.getId(), user2.getId());
         assertEquals(user1.getFriends().size(), 0, "user не имеет друзей");
         assertEquals(user2.getFriends().size(), 0, "otherUser не имеет друзей");
     }
 
     @Test
     void shouldSuccessGetMutualFriends() {
-        repository.addUser(user1);
-        repository.addUser(user2);
-        repository.addUser(user3);
-        userService.addFriend(user1, user2);
-        userService.addFriend(user2, user3);
-        List<User> mutualFriends = userService.getMutualFriends(user1, user3);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.addFriend(user2.getId(), user3.getId());
+        List<User> mutualFriends = userService.getMutualFriends(user1.getId(), user3.getId());
         assertEquals(mutualFriends.get(0), user2, "user и user2 не имеют общих друзей");
     }
 }
