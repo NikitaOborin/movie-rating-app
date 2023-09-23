@@ -69,10 +69,9 @@ public class UserService {
 
     public User deleteFriend(Long userId, Long friendId) {
         log.info("deleteFriend userService: start with {}, {}", userId, friendId);
-        User user = userRepository.getUserById(userId);
-        user.getFriends().remove(friendId);
-        userRepository.getUserById(friendId).getFriends().remove(user.getId());
-        return user;
+        userRepository.getUserById(userId).getFriends().remove(friendId);
+        userRepository.getUserById(friendId).getFriends().remove(userId);
+        return userRepository.getUserById(userId);
     }
 
     public List<User> getUserFriends(Long userId) {
@@ -92,21 +91,12 @@ public class UserService {
         User otherUser = userRepository.getUserById(otherUserId);
         Set<Long> userFriendsId = user.getFriends();
         Set<Long> otherUserFriendsId = otherUser.getFriends();
-        List<Long> mutualFriendsId = new ArrayList<>();
+        List<User> mutualFriends = new ArrayList<>();
 
         for (Long friendId : userFriendsId) {
             for (Long otherFriendId : otherUserFriendsId) {
                 if (friendId.equals(otherFriendId)) {
-                    mutualFriendsId.add(friendId);
-                }
-            }
-        }
-
-        List<User> mutualFriends = new ArrayList<>();
-        for (User someUser : userRepository.getUsers()) {
-            for (Long id : mutualFriendsId) {
-                if (someUser.getId().equals(id)) {
-                    mutualFriends.add(someUser);
+                    mutualFriends.add(userRepository.getUserById(otherFriendId));
                 }
             }
         }

@@ -50,6 +50,4 @@ public class FilmInMemoryRepository implements FilmRepository {
         log.info("getFilmById repository: start");
         return films.get(id);
     }
-
-
 }

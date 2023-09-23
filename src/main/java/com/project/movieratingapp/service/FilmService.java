@@ -82,7 +82,7 @@ public class FilmService {
         List<Film> films = filmRepository.getFilms();
         List<Film> mostPopularFilms = new ArrayList<>();
 
-        Collections.sort(films, new Comparator<Film>() {
+        films.sort(new Comparator<Film>() {
             @Override
             public int compare(Film o1, Film o2) {
                 return o2.getLikes().size() - o1.getLikes().size();

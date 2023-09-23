@@ -1,6 +1,7 @@
 package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.User;
+import com.project.movieratingapp.repository.UserInMemoryRepository;
 import com.project.movieratingapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,33 +18,25 @@ class UserServiceTest {
     private User user1;
     private User user2;
     private User user3;
-    private final UserService userService;
-    private final UserRepository userRepository;
-
-    @Autowired
-    UserServiceTest(UserService userService, UserRepository userRepository) {
-        this.userService = userService;
-        this.userRepository = userRepository;
-    }
-
+    private UserService userService;
     @BeforeEach
     void createUsers() {
+        UserRepository userRepository = new UserInMemoryRepository();
+        userService = new UserService(userRepository);
+
         user1 = new User();
-        user1.setId(1L);
         user1.setName("user1Name");
         user1.setBirthday(LocalDate.of(2001, 1, 1));
         user1.setLogin("user1Login");
         user1.setEmail("user1@mail.ru");
 
         user2 = new User();
-        user2.setId(2L);
         user2.setName("user2Name");
         user2.setBirthday(LocalDate.of(2002, 2, 2));
         user2.setLogin("user2Login");
         user2.setEmail("user2@mail.ru");
 
         user3 = new User();
-        user3.setId(3L);
         user3.setName("user3Name");
         user3.setBirthday(LocalDate.of(2003, 3, 3));
         user3.setLogin("user3Login");

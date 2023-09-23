@@ -2,7 +2,9 @@ package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
+import com.project.movieratingapp.repository.FilmInMemoryRepository;
 import com.project.movieratingapp.repository.FilmRepository;
+import com.project.movieratingapp.repository.UserInMemoryRepository;
 import com.project.movieratingapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,19 +25,15 @@ class FilmServiceTest {
     private Film film2;
     private Film film3;
     private User user1;
-    private final FilmService filmService;
-    private final FilmRepository filmRepository;
-    private final UserRepository userRepository;
-
-    @Autowired
-    FilmServiceTest(FilmService filmService, FilmRepository filmRepository, UserRepository userRepository) {
-        this.filmService = filmService;
-        this.filmRepository = filmRepository;
-        this.userRepository = userRepository;
-    }
+    private FilmRepository filmRepository;
+    private FilmService filmService;
 
     @BeforeEach
     void createFilms() {
+        filmRepository = new FilmInMemoryRepository();
+        UserRepository userRepository = new UserInMemoryRepository();
+        filmService = new FilmService(filmRepository, userRepository);
+
         film1 = new Film();
         film1.setId(1L);
         film1.setName("film1Name");
@@ -85,34 +83,34 @@ class FilmServiceTest {
         assertEquals(user1.getFilmLikes().size(), 0, "У пользователя есть лайки");
     }
 
-//    @Test
-//    void shouldSuccessGetMostPopularFilms() {
-//        Integer count = 10;
-//
-//        Set<Long> set1 = new HashSet<>();
-//        set1.add(1L);
-//        film1.setLikes(set1);
-//
-//        Set<Long> set2 = new HashSet<>();
-//        set2.add(1L);
-//        set2.add(2L);
-//        film2.setLikes(set2);
-//
-//        Set<Long> set3 = new HashSet<>();
-//        set3.add(1L);
-//        set3.add(2L);
-//        set3.add(3L);
-//        film3.setLikes(set3);
-//
-//        filmRepository.updateFilm(film1);
-//        filmRepository.updateFilm(film2);
-//        filmRepository.updateFilm(film3);
-//
-//        List<Film> expectFilmsList = new ArrayList<>();
-//        expectFilmsList.add(film3);
-//        expectFilmsList.add(film2);
-//        expectFilmsList.add(film1);
-//
-//        assertEquals(expectFilmsList, filmService.getMostPopularFilms(count), "Фильмы неверно отсортированы");
-//    }
+    @Test
+    void shouldSuccessGetMostPopularFilms() {
+        Integer count = 10;
+
+        Set<Long> set1 = new HashSet<>();
+        set1.add(1L);
+        film1.setLikes(set1);
+
+        Set<Long> set2 = new HashSet<>();
+        set2.add(1L);
+        set2.add(2L);
+        film2.setLikes(set2);
+
+        Set<Long> set3 = new HashSet<>();
+        set3.add(1L);
+        set3.add(2L);
+        set3.add(3L);
+        film3.setLikes(set3);
+
+        filmRepository.updateFilm(film1);
+        filmRepository.updateFilm(film2);
+        filmRepository.updateFilm(film3);
+
+        List<Film> expectFilmsList = new ArrayList<>();
+        expectFilmsList.add(film3);
+        expectFilmsList.add(film2);
+        expectFilmsList.add(film1);
+
+        assertEquals(expectFilmsList, filmService.getMostPopularFilms(count), "Фильмы неверно отсортированы");
+    }
 }
