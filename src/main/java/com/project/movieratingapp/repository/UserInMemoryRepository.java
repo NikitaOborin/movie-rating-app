@@ -22,11 +22,11 @@ public class UserInMemoryRepository implements UserRepository {
 
     @Override
     public User addUser(User user) {
-        log.info("addUser repository: start with {}", user);
+        log.info("UserInMemoryRepository: addUser(): start with user={}", user);
         user.setId(generateId());
-        if (user.getName() == null) {
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().equals(" ")) {
             user.setName(user.getLogin());
-            log.info("addUser repository: name=null, login assign for name");
+            log.info("UserInMemoryRepository: addUser(): name=null, login assign for name");
         }
         users.put(generatorId, user);
         return user;
@@ -34,7 +34,7 @@ public class UserInMemoryRepository implements UserRepository {
 
     @Override
     public User updateUser(User user) {
-        log.info("updateUser repository: start with {}", user);
+        log.info("UserInMemoryRepository: updateUser(): start with user={}", user);
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
             return user;
@@ -45,17 +45,17 @@ public class UserInMemoryRepository implements UserRepository {
 
     @Override
     public List<User> getUsers() {
-        log.info("getUsers repository: start");
+        log.info("UserInMemoryRepository: getUsers(): start");
         return new ArrayList<>(users.values());
     }
 
     @Override
-    public User getUserById(Long userId) {
-        log.info("getUserById repository: start");
-        if (users.containsKey(userId)) {
-            return users.get(userId);
+    public User getUserById(Long id) {
+        log.info("UserInMemoryRepository: getUserById(): start with id={}", id);
+        if (users.containsKey(id)) {
+            return users.get(id);
         } else {
-            throw new NotFoundException("user with id = " + userId + " not found");
+            throw new NotFoundException("user with id = " + id + " not found");
         }
     }
 }

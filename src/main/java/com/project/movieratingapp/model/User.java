@@ -8,6 +8,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -22,6 +23,6 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Long> friends;
-    private Set<Long> filmLikes;
+    private Set<Long> friends = new HashSet<>();
+    private Set<Long> filmLikes = new HashSet<>();
 }

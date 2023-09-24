@@ -23,62 +23,47 @@ public class FilmService {
     }
 
     public List<Film> getFilms() {
-        log.info("getFilms filmService: start");
+        log.info("FilmService: getFilms(): start");
         return filmRepository.getFilms();
     }
 
     public Film addFilm(Film film) {
-        log.info("addFilm filmService: start with {}", film);
+        log.info("FilmService: addFilm(): start with film={}", film);
         return filmRepository.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
-        log.info("updateFilm filmService: start with {}", film);
+        log.info("FilmService: updateFilm(): start with film={}", film);
         return filmRepository.updateFilm(film);
     }
 
     public Film getFilmById(Long id) {
+        log.info("FilmService: getFilmById(): start with id={}", id);
         return filmRepository.getFilmById(id);
     }
 
-    public Film addLike(Long filmId, Long userId) {
-        log.info("addLike filmService: start with {}, {}", filmId, userId);
-        Film film = filmRepository.getFilmById(filmId);
+    public Film addLike(Long id, Long userId) {
+        log.info("FilmService: addLike(): start with id={}, userId={}", id, userId);
+        Film film = filmRepository.getFilmById(id);
         User user = userRepository.getUserById(userId);
-        if (film.getLikes() != null) {
-            film.getLikes().add(user.getId());
-        } else {
-            log.info("addLike filmService: film likes list equals null");
-            Set<Long> usersId = new HashSet<>();
-            usersId.add(user.getId());
-            film.setLikes(usersId);
-        }
 
-        if (user.getFilmLikes() != null) {
-            user.getFilmLikes().add(film.getId());
-        } else {
-            log.info("addLike filmService: user likes list equals null");
-            Set<Long> filmsId = new HashSet<>();
-            filmsId.add(film.getId());
-            user.setFilmLikes(filmsId);
-        }
+        film.getLikes().add(user.getId());
+        user.getFilmLikes().add(film.getId());
         return film;
     }
 
-    public Film deleteLike(Long filmId, Long id) {
-        log.info("deleteLike filmService: start with {}, {}", filmId, id);
-        Film film = filmRepository.getFilmById(filmId);
-        User user = userRepository.getUserById(id);
-        if (film.getLikes() != null) {
-            film.getLikes().remove(id);
-        }
+    public Film deleteLike(Long id, Long userId) {
+        log.info("FilmService: deleteLike(): start with id={}, userId={}", id, userId);
+        Film film = filmRepository.getFilmById(id);
+        User user = userRepository.getUserById(userId);
 
+        film.getLikes().remove(userId);
         user.getFilmLikes().remove(film.getId());
         return film;
     }
 
     public List<Film> getMostPopularFilms(Integer count) {
-        log.info("deleteLike getMostPopularFilms: start ");
+        log.info("FilmService: getMostPopularFilms(): start with count={}", count);
         List<Film> films = filmRepository.getFilms();
         List<Film> mostPopularFilms = new ArrayList<>();
 

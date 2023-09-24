@@ -22,7 +22,7 @@ public class FilmInMemoryRepository implements FilmRepository {
 
     @Override
     public Film addFilm(Film film) {
-        log.info("addFilm repository: start with {}", film);
+        log.info("FilmInMemoryRepository: addFilm(): start with film={}", film);
         film.setId(generateId());
         films.put(generatorId, film);
         return film;
@@ -30,7 +30,7 @@ public class FilmInMemoryRepository implements FilmRepository {
 
     @Override
     public Film updateFilm(Film film) {
-        log.info("updateFilm repository: start with {}", film);
+        log.info("FilmInMemoryRepository: updateFilm(): start with film={}", film);
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
             return film;
@@ -41,13 +41,17 @@ public class FilmInMemoryRepository implements FilmRepository {
 
     @Override
     public List<Film> getFilms() {
-        log.info("getFilms repository: start");
+        log.info("FilmInMemoryRepository: getFilms(): start");
         return new ArrayList<>(films.values());
     }
 
     @Override
     public Film getFilmById(Long id) {
-        log.info("getFilmById repository: start");
-        return films.get(id);
+        log.info("FilmInMemoryRepository: getFilmById(): start with id={}", id);
+        if (films.containsKey(id)) {
+            return films.get(id);
+        } else {
+            throw new NotFoundException("film with id = " + id + " not found");
+        }
     }
 }
