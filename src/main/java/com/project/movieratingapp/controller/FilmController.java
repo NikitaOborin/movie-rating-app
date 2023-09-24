@@ -1,7 +1,7 @@
 package com.project.movieratingapp.controller;
 
 import com.project.movieratingapp.model.Film;
-import com.project.movieratingapp.repository.FilmRepository;
+import com.project.movieratingapp.service.FilmService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +15,52 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
+    private final FilmService filmService;
+
     @Autowired
-    FilmRepository filmRepository;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping()
     public List<Film> getFilms() {
-        log.info("getFilms controller: start");
-        return filmRepository.getFilms();
+        log.info("FilmController: getFilms(): start");
+        return filmService.getFilms();
     }
 
     @PostMapping()
     public Film addFilm(@Valid @RequestBody Film film) {
-        log.info("addFilm controller: start with {}", film);
-        return filmRepository.addFilm(film);
+        log.info("FilmController: addFilm(): start with film={}", film);
+        return filmService.addFilm(film);
     }
 
     @PutMapping()
     public Film updateFilm(@Valid @RequestBody Film film) {
-        log.info("updateFilm controller: start with {}", film);
-        return filmRepository.updateFilm(film);
+        log.info("FilmController: updateFilm(): start with film={}", film);
+        return filmService.updateFilm(film);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        log.info("FilmController: getFilmById(): start with id={}", id);
+        return filmService.getFilmById(id);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("FilmController: addLike(): start with id={}, userId={}", id, userId);
+        return filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("FilmController: deleteLike(): start with id={}, userId={}", id, userId);
+        return filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
+        log.info("FilmController: getMostPopularFilms(): start with count={}", count);
+        return filmService.getMostPopularFilms(count);
     }
 }
