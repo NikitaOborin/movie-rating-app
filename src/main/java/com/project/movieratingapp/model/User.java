@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -25,4 +26,5 @@ public class User {
     private LocalDate birthday;
     private Set<Long> friends = new HashSet<>();
     private Set<Long> filmLikes = new HashSet<>();
+    private Map<Long, Boolean> friendshipStatus; // статус: подтвержденная или не подтвержденная дружба с пользователем
 }
