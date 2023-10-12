@@ -10,3 +10,9 @@ MERGE INTO mpa (mpa_id, name) VALUES (1, 'G'),
                                      (3, 'PG-13'),
                                      (4, 'R'),
                                      (5, 'NC-17');
+
+--INSERT INTO film (name, description, release_date, duration, mpa_id)
+--VALUES ('Фильм 1', 'Описание фильма 1', '2001-01-01', 90, 1);
+
+--INSERT INTO users (name, login, email, birthday)
+--VALUES ('Иван 1', 'Логин иван 1', 'иван1@mail.ru', '2001-01-01');

@@ -1,11 +1,10 @@
 package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.UserInMemoryRepository;
-import com.project.movieratingapp.repository.UserRepository;
+import com.project.movieratingapp.repository.user.UserInMemoryRepository;
+import com.project.movieratingapp.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;

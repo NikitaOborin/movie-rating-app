@@ -1,4 +1,4 @@
-package com.project.movieratingapp.repository;
+package com.project.movieratingapp.repository.user;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.User;

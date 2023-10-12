@@ -1,9 +1,10 @@
 package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.UserRepository;
+import com.project.movieratingapp.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(@Qualifier("userDBRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

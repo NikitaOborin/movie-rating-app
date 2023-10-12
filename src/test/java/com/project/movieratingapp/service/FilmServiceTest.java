@@ -2,10 +2,10 @@ package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.FilmInMemoryRepository;
-import com.project.movieratingapp.repository.FilmRepository;
-import com.project.movieratingapp.repository.UserInMemoryRepository;
-import com.project.movieratingapp.repository.UserRepository;
+import com.project.movieratingapp.repository.film.FilmInMemoryRepository;
+import com.project.movieratingapp.repository.film.FilmRepository;
+import com.project.movieratingapp.repository.user.UserInMemoryRepository;
+import com.project.movieratingapp.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

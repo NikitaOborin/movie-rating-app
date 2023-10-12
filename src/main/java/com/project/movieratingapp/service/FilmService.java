@@ -2,10 +2,11 @@ package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.FilmRepository;
-import com.project.movieratingapp.repository.UserRepository;
+import com.project.movieratingapp.repository.film.FilmRepository;
+import com.project.movieratingapp.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,11 +14,13 @@ import java.util.*;
 @Slf4j
 @Service
 public class FilmService {
+
     private final FilmRepository filmRepository;
+
     private final UserRepository userRepository;
 
     @Autowired
-    public FilmService(FilmRepository filmRepository, UserRepository userRepository) {
+    public FilmService(@Qualifier("filmDBRepository") FilmRepository filmRepository, @Qualifier("userDBRepository") UserRepository userRepository) {
         this.filmRepository = filmRepository;
         this.userRepository = userRepository;
     }

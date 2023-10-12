@@ -3,9 +3,13 @@ package com.project.movieratingapp.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.movieratingapp.validation.BirthdayMovie;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +28,8 @@ public class Film {
     @Positive
     private Integer duration;
     private Set<Long> likes = new HashSet<>();
-    private List<Genre> genres;
+    private List<Genre> genres = new ArrayList<>();;
     private Mpa mpa;
+
+
 }

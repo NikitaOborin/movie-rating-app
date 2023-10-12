@@ -1,4 +1,4 @@
-package com.project.movieratingapp.repository;
+package com.project.movieratingapp.repository.film;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
