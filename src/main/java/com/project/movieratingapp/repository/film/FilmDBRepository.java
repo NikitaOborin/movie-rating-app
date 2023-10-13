@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class FilmDBRepository implements FilmRepository {
@@ -45,6 +46,8 @@ public class FilmDBRepository implements FilmRepository {
             return preparedStatement;
         }, keyHolder );
 
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+
         genreRepository.updateGenreInDbForFilm(film);
 
         return film;
@@ -61,7 +64,8 @@ public class FilmDBRepository implements FilmRepository {
         } else {
             throw new NotFoundException(film + " not found");
         }
-
+        
+        film.setGenres(genreRepository.getListGenresWithoutDuplicate(film.getGenres()));
         return film;
     }
 
