@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface MpaRepository {
     List<Mpa> getListMpa();
+
+    Mpa getMpaByFilmId(Long film_id);
 }
