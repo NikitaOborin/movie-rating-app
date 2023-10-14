@@ -8,6 +8,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +25,6 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Long> friends = new HashSet<>();
+    private Map<Long, Boolean> friends = new HashMap<>(); // статус: подтвержденная или не подтвержденная дружба с пользователем
     private Set<Long> filmLikes = new HashSet<>();
-    private Map<Long, Boolean> friendshipStatus; // статус: подтвержденная или не подтвержденная дружба с пользователем
 }

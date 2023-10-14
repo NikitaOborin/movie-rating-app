@@ -5,6 +5,7 @@ import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.Mpa;
 import com.project.movieratingapp.repository.genre.GenreRepository;
 import com.project.movieratingapp.repository.mpa.MpaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Repository
 public class FilmDBRepository implements FilmRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -32,9 +34,9 @@ public class FilmDBRepository implements FilmRepository {
 
     @Override
     public Film addFilm(Film film) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         String sqlQuery = "INSERT INTO film (name, description, release_date, duration, mpa_id) " +
                           "VALUES (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
@@ -56,16 +58,17 @@ public class FilmDBRepository implements FilmRepository {
     @Override
     public Film updateFilm(Film film) {
         String sqlQuery = "UPDATE film SET name=?, description=?, release_date=?, duration=?, mpa_id=? WHERE film_id=?";
-        int i = jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
+        int countRow = jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
                                       film.getDuration(), film.getMpa().getId(), film.getId());
 
-        if (i != 0) {
+        if (countRow == 1) {
             genreRepository.updateGenreInDbForFilm(film);
         } else {
             throw new NotFoundException(film + " not found");
         }
-        
+
         film.setGenres(genreRepository.getListGenresWithoutDuplicate(film.getGenres()));
+
         return film;
     }
 
