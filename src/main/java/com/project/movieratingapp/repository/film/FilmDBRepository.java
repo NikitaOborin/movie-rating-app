@@ -3,7 +3,9 @@ package com.project.movieratingapp.repository.film;
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.Mpa;
+import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.repository.genre.GenreRepository;
+import com.project.movieratingapp.repository.like.LikeRepository;
 import com.project.movieratingapp.repository.mpa.MpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,14 @@ public class FilmDBRepository implements FilmRepository {
     private final JdbcTemplate jdbcTemplate;
     private final MpaRepository mpaRepository;
     private final GenreRepository genreRepository;
+    private final LikeRepository likeRepository;
 
     @Autowired
-    public FilmDBRepository(JdbcTemplate jdbcTemplate, MpaRepository mpaRepository, GenreRepository genreRepository) {
+    public FilmDBRepository(JdbcTemplate jdbcTemplate, MpaRepository mpaRepository, GenreRepository genreRepository, LikeRepository likeRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaRepository = mpaRepository;
         this.genreRepository = genreRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -68,6 +72,7 @@ public class FilmDBRepository implements FilmRepository {
         }
 
         film.setGenres(genreRepository.getListGenresWithoutDuplicate(film.getGenres()));
+        film.setLikes(likeRepository.getLikesForFilm(film));
 
         return film;
     }
@@ -79,6 +84,7 @@ public class FilmDBRepository implements FilmRepository {
         for (Film film : films) {
             film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
             film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesForFilm(film));
         }
 
         return films;
@@ -93,11 +99,22 @@ public class FilmDBRepository implements FilmRepository {
             film = films.get(0);
             film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
             film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesForFilm(film));
         } else {
             throw new NotFoundException("film with id = " + id + " not found");
         }
 
         return film;
+    }
+
+    @Override
+    public Film addLike(Film film, User user) {
+        return likeRepository.addLikes(film, user);
+    }
+
+    @Override
+    public Film deleteLike(Film film, User user) {
+        return likeRepository.deleteLike(film, user);
     }
 
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {

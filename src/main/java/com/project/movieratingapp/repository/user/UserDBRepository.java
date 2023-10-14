@@ -3,6 +3,7 @@ package com.project.movieratingapp.repository.user;
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.repository.friendship.FriendshipRepository;
+import com.project.movieratingapp.repository.like.LikeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,11 +22,13 @@ import java.util.Objects;
 public class UserDBRepository implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final FriendshipRepository friendshipRepository;
+    private final LikeRepository likeRepository;
 
     @Autowired
-    public UserDBRepository(JdbcTemplate jdbcTemplate, FriendshipRepository friendshipRepository) {
+    public UserDBRepository(JdbcTemplate jdbcTemplate, FriendshipRepository friendshipRepository, LikeRepository likeRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.friendshipRepository = friendshipRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -74,6 +77,7 @@ public class UserDBRepository implements UserRepository {
 
         for (User user : users) {
             user.setFriends(friendshipRepository.getFriendshipMapForUser(user));
+            user.setFilmLikes(likeRepository.getLikesForUser(user));
         }
 
         return users;
@@ -91,6 +95,7 @@ public class UserDBRepository implements UserRepository {
         }
 
         user.setFriends(friendshipRepository.getFriendshipMapForUser(user));
+        user.setFilmLikes(likeRepository.getLikesForUser(user));
 
         return user;
     }

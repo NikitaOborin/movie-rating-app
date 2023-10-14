@@ -2,6 +2,7 @@ package com.project.movieratingapp.repository.film;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
+import com.project.movieratingapp.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -53,5 +54,15 @@ public class FilmInMemoryRepository implements FilmRepository {
         } else {
             throw new NotFoundException("film with id = " + id + " not found");
         }
+    }
+
+    @Override
+    public Film addLike(Film film, User user) {
+        return null;
+    }
+
+    @Override
+    public Film deleteLike(Film film, User user) {
+        return null;
     }
 }

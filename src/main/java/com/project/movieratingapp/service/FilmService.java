@@ -14,9 +14,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class FilmService {
-
     private final FilmRepository filmRepository;
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -52,6 +50,9 @@ public class FilmService {
 
         film.getLikes().add(user.getId());
         user.getFilmLikes().add(film.getId());
+
+        filmRepository.addLike(film, user);
+
         return film;
     }
 
@@ -62,6 +63,9 @@ public class FilmService {
 
         film.getLikes().remove(userId);
         user.getFilmLikes().remove(film.getId());
+
+        filmRepository.deleteLike(film, user);
+
         return film;
     }
 
@@ -82,6 +86,7 @@ public class FilmService {
                mostPopularFilms.add(film);
            }
         }
+
         return mostPopularFilms;
     }
 }
