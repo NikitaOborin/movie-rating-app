@@ -22,7 +22,9 @@ public class UserService {
     private final LikeRepository likeRepository;
 
     @Autowired
-    public UserService(@Qualifier("userDBRepository") UserRepository userRepository, FriendshipRepository friendshipRepository, LikeRepository likeRepository) {
+    public UserService(@Qualifier("userDBRepository") UserRepository userRepository,
+                                                      FriendshipRepository friendshipRepository,
+                                                      LikeRepository likeRepository) {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
         this.likeRepository = likeRepository;
