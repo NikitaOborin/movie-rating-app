@@ -1,4 +1,4 @@
-package com.project.movieratingapp.repository;
+package com.project.movieratingapp.repository.user;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.User;
@@ -18,6 +18,12 @@ public class UserInMemoryRepository implements UserRepository {
 
     private long generateId() {
         return ++generatorId;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        log.info("UserInMemoryRepository: getUsers(): start");
+        return new ArrayList<>(users.values());
     }
 
     @Override
@@ -41,12 +47,6 @@ public class UserInMemoryRepository implements UserRepository {
         } else {
             throw new NotFoundException(user + " not found");
         }
-    }
-
-    @Override
-    public List<User> getUsers() {
-        log.info("UserInMemoryRepository: getUsers(): start");
-        return new ArrayList<>(users.values());
     }
 
     @Override
