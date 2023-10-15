@@ -28,7 +28,7 @@ public class GenreDBRepository implements GenreRepository {
     }
 
     @Override
-    public Genre getGenreById(Integer genreId) {
+    public Genre getGenreByGenreId(Integer genreId) {
         Genre genre;
         List<Genre> listGenres = jdbcTemplate.query("SELECT * FROM genre WHERE genre_id=?", genreRowMapper, genreId);
 
@@ -42,16 +42,16 @@ public class GenreDBRepository implements GenreRepository {
     }
 
     @Override
-    public List<Genre> getGenreByFilmId(Long film_id) {
+    public List<Genre> getGenreByFilmId(Long filmId) {
         return jdbcTemplate.query("SELECT g.genre_id, g.name FROM film AS f " +
                 "INNER JOIN film_genre AS fg ON f.film_id = fg.film_id " +
                 "INNER JOIN genre AS g ON fg.genre_id = g.genre_id " +
-                "WHERE f.film_id=?", genreRowMapper, film_id);
+                "WHERE f.film_id=?", genreRowMapper, filmId);
     }
 
     @Override
-    public void updateGenreInDbForFilm(Film film) {
-        deleteGenreByFilm(film);
+    public void updateGenreInDbByFilm(Film film) {
+        deleteGenreByFilmId(film.getId());
 
         List<Genre> genres = getListGenresWithoutDuplicate(film.getGenres());
 
@@ -71,12 +71,11 @@ public class GenreDBRepository implements GenreRepository {
     }
 
     @Override
-    public void deleteGenreByFilm(Film film) {
-        jdbcTemplate.update("DELETE FROM film_genre WHERE film_id=?", film.getId());
+    public void deleteGenreByFilmId(Long filmId) {
+        jdbcTemplate.update("DELETE FROM film_genre WHERE film_id=?", filmId);
     }
 
-    @Override
-    public List<Genre> getListGenresWithoutDuplicate(List<Genre> genres) {
+    private List<Genre> getListGenresWithoutDuplicate(List<Genre> genres) {
         Set<Genre> genreSet = new HashSet<>(genres);
         List<Genre> genreListWithoutDuplicate = new ArrayList<>(genreSet);
 

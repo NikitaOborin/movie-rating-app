@@ -2,14 +2,10 @@ package com.project.movieratingapp.repository.film;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
-import com.project.movieratingapp.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -19,6 +15,12 @@ public class FilmInMemoryRepository implements FilmRepository {
 
     private long generateId() {
         return ++generatorId;
+    }
+
+    @Override
+    public List<Film> getFilms() {
+        log.info("FilmInMemoryRepository: getFilms(): start");
+        return new ArrayList<>(films.values());
     }
 
     @Override
@@ -41,12 +43,6 @@ public class FilmInMemoryRepository implements FilmRepository {
     }
 
     @Override
-    public List<Film> getFilms() {
-        log.info("FilmInMemoryRepository: getFilms(): start");
-        return new ArrayList<>(films.values());
-    }
-
-    @Override
     public Film getFilmById(Long id) {
         log.info("FilmInMemoryRepository: getFilmById(): start with id={}", id);
         if (films.containsKey(id)) {
@@ -57,12 +53,23 @@ public class FilmInMemoryRepository implements FilmRepository {
     }
 
     @Override
-    public Film addLike(Film film, User user) {
-        return null;
-    }
+    public List<Film> getMostPopularFilms(Integer count) {
+        List<Film> filmList = (List<Film>) films.values();
+        List<Film> mostPopularFilms = new ArrayList<>();
 
-    @Override
-    public Film deleteLike(Film film, User user) {
-        return null;
+        filmList.sort(new Comparator<Film>() {
+            @Override
+            public int compare(Film o1, Film o2) {
+                return o2.getLikes().size() - o1.getLikes().size();
+            }
+        });
+
+        for (Film film : filmList) {
+            if (mostPopularFilms.size() < count) {
+                mostPopularFilms.add(film);
+            }
+        }
+
+        return mostPopularFilms;
     }
 }

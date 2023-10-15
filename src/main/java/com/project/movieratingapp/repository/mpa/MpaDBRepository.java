@@ -39,8 +39,8 @@ public class MpaDBRepository implements MpaRepository {
     @Override
     public Mpa getMpaByFilmId(Long film_id) {
         return jdbcTemplate.queryForObject("SELECT m.mpa_id, m.name FROM mpa AS m " +
-                                   "INNER JOIN film AS f ON m.mpa_id = f.mpa_id " +
-                               "WHERE f.film_id=?", mpaRowMapper, film_id);
+                                                   "INNER JOIN film AS f ON m.mpa_id = f.mpa_id " +
+                                               "WHERE f.film_id=?", mpaRowMapper, film_id);
     }
 
 

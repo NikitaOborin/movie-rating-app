@@ -1,7 +1,6 @@
 package com.project.movieratingapp.repository.like;
 
-import com.project.movieratingapp.model.Film;
-import com.project.movieratingapp.model.User;
+import com.project.movieratingapp.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,36 +23,39 @@ public class LikeDBRepository implements LikeRepository {
     }
 
     @Override
-    public Film addLikes(Film film, User user) {
+    public void addLikes(Long filmId, Long userId) {
         String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"like_id"});
-            preparedStatement.setLong(1, film.getId());
-            preparedStatement.setLong(2, user.getId());
+            preparedStatement.setLong(1, filmId);
+            preparedStatement.setLong(2, userId);
+
             return preparedStatement;
         }, keyHolder);
-
-        return film;
     }
 
     @Override
-    public Film deleteLike(Film film, User user) {
-        jdbcTemplate.update("DELETE FROM likes WHERE film_id=? AND user_id=?", film.getId(), user.getId());
+    public void deleteLike(Long filmId, Long userId) {
+        int countRow = jdbcTemplate.update("DELETE FROM likes WHERE film_id=? AND user_id=?", filmId, userId);
 
-        return film;
+        if (countRow != 1) {
+            throw new NotFoundException("user's like with userId = " + userId + " for film with filmId = " + filmId + " found");
+        }
     }
 
     @Override
-    public Set<Long> getLikesForFilm(Film film) {
-        List<Long> listUserId = jdbcTemplate.query("SELECT user_id FROM likes WHERE film_id=?", userLikeRowMapper, film.getId());
+    public Set<Long> getLikesByFilmId(Long filmId) {
+        List<Long> listUserId = jdbcTemplate.query("SELECT user_id FROM likes WHERE film_id=?", userLikeRowMapper, filmId);
+
         return new HashSet<>(listUserId);
     }
 
     @Override
-    public Set<Long> getLikesForUser(User user) {
-        List<Long> listFilmId = jdbcTemplate.query("SELECT film_id FROM likes WHERE user_id=?", filmLikeRowMapper, user.getId());
+    public Set<Long> getLikesByUserId(Long userId) {
+        List<Long> listFilmId = jdbcTemplate.query("SELECT film_id FROM likes WHERE user_id=?", filmLikeRowMapper, userId);
+
         return new HashSet<>(listFilmId);
     }
 

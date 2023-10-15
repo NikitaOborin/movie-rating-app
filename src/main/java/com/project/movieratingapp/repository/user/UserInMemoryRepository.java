@@ -21,6 +21,12 @@ public class UserInMemoryRepository implements UserRepository {
     }
 
     @Override
+    public List<User> getUsers() {
+        log.info("UserInMemoryRepository: getUsers(): start");
+        return new ArrayList<>(users.values());
+    }
+
+    @Override
     public User addUser(User user) {
         log.info("UserInMemoryRepository: addUser(): start with user={}", user);
         user.setId(generateId());
@@ -41,12 +47,6 @@ public class UserInMemoryRepository implements UserRepository {
         } else {
             throw new NotFoundException(user + " not found");
         }
-    }
-
-    @Override
-    public List<User> getUsers() {
-        log.info("UserInMemoryRepository: getUsers(): start");
-        return new ArrayList<>(users.values());
     }
 
     @Override

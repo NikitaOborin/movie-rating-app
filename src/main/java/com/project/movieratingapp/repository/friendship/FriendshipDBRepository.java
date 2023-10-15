@@ -23,33 +23,33 @@ public class FriendshipDBRepository implements FriendshipRepository {
     }
 
     @Override
-    public User updateFriendshipInDBForUser(User user) {
-        deleteAllFriendsForUser(user);
+    public void addFriendship(User user, Long friendId) {
+        deleteFriendship(user.getId(), friendId);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, ?)";
-        Long userId = user.getId();
+        Boolean friendshipStatus = user.getFriends().get(friendId);
 
-        for (Long friendId : user.getFriends().keySet()) {
-            Boolean friendshipStatus = user.getFriends().get(friendId);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"friendship_id"});
+            preparedStatement.setLong(1, user.getId());
+            preparedStatement.setLong(2, friendId);
+            preparedStatement.setBoolean(3, friendshipStatus);
 
-            jdbcTemplate.update(connection -> {
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, new String[]{"friendship_id"});
-                preparedStatement.setLong(1, userId);
-                preparedStatement.setLong(2, friendId);
-                preparedStatement.setBoolean(3, friendshipStatus);
-                return preparedStatement;
-            }, keyHolder);
-        }
-
-        return user;
+            return preparedStatement;
+        }, keyHolder);
     }
 
     @Override
-    public Map<Long, Boolean> getFriendshipMapForUser(User user) {
+    public void deleteFriendship(Long userId, Long friendId) {
+        jdbcTemplate.update("DELETE FROM friendship WHERE user_id=? AND friend_id=?", userId, friendId);
+    }
+
+    @Override
+    public Map<Long, Boolean> getFriendsByUserId(Long userId) {
         Map<Long, Boolean> friendshipMap = new HashMap<>();
-        List<Map<Long, Boolean>> listFriendshipMap = jdbcTemplate.query("SELECT friend_id, status FROM friendship WHERE user_id=?",
-                                                                       rowMapperFriendship, user.getId());
+        String sqlString = "SELECT friend_id, status FROM friendship WHERE user_id=?";
+        List<Map<Long, Boolean>> listFriendshipMap = jdbcTemplate.query(sqlString, rowMapperFriendship, userId);
 
         for (Map<Long, Boolean> friendshipStatus : listFriendshipMap) {
             Long key;
@@ -66,16 +66,11 @@ public class FriendshipDBRepository implements FriendshipRepository {
         return friendshipMap;
     }
 
-    @Override
-    public void deleteAllFriendsForUser(User user) {
-        jdbcTemplate.update("DELETE FROM friendship WHERE user_id=?", user.getId());
-    }
-
     private final RowMapper<Map<Long, Boolean>> rowMapperFriendship = (rs, rowNum) -> {
-      Map<Long, Boolean> friendshipMap = new HashMap<>();
-      Long key = rs.getLong("friend_id");
-      Boolean value = rs.getBoolean("status");
-      friendshipMap.put(key, value);
+        Map<Long, Boolean> friendshipMap = new HashMap<>();
+        Long key = rs.getLong("friend_id");
+        Boolean value = rs.getBoolean("status");
+        friendshipMap.put(key, value);
 
       return friendshipMap;
     };

@@ -23,6 +23,6 @@ public class GenreService {
     }
 
     public Genre getGenreById(Integer genreId) {
-        return genreRepository.getGenreById(genreId);
+        return genreRepository.getGenreByGenreId(genreId);
     }
 }

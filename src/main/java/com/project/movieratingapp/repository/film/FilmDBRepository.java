@@ -3,10 +3,6 @@ package com.project.movieratingapp.repository.film;
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.Mpa;
-import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.genre.GenreRepository;
-import com.project.movieratingapp.repository.like.LikeRepository;
-import com.project.movieratingapp.repository.mpa.MpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,16 +20,15 @@ import java.util.Objects;
 @Repository
 public class FilmDBRepository implements FilmRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final MpaRepository mpaRepository;
-    private final GenreRepository genreRepository;
-    private final LikeRepository likeRepository;
 
     @Autowired
-    public FilmDBRepository(JdbcTemplate jdbcTemplate, MpaRepository mpaRepository, GenreRepository genreRepository, LikeRepository likeRepository) {
+    public FilmDBRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mpaRepository = mpaRepository;
-        this.genreRepository = genreRepository;
-        this.likeRepository = likeRepository;
+    }
+
+    @Override
+    public List<Film> getFilms() {
+        return jdbcTemplate.query("SELECT * FROM film", filmRowMapper);
     }
 
     @Override
@@ -54,68 +49,48 @@ public class FilmDBRepository implements FilmRepository {
 
         film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-        genreRepository.updateGenreInDbForFilm(film);
-
         return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
         String sqlQuery = "UPDATE film SET name=?, description=?, release_date=?, duration=?, mpa_id=? WHERE film_id=?";
-        int countRow = jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
-                                      film.getDuration(), film.getMpa().getId(), film.getId());
+        int countRow =  jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
+                                   film.getDuration(), film.getMpa().getId(), film.getId());
 
-        if (countRow == 1) {
-            genreRepository.updateGenreInDbForFilm(film);
-        } else {
-            throw new NotFoundException(film + " not found");
+        if (countRow != 1) {
+            throw new NotFoundException("film with id = " + film.getId() + " not found");
         }
-
-        film.setGenres(genreRepository.getListGenresWithoutDuplicate(film.getGenres()));
-        film.setLikes(likeRepository.getLikesForFilm(film));
 
         return film;
     }
 
     @Override
-    public List<Film> getFilms() {
-        List<Film> films = jdbcTemplate.query("SELECT * FROM film", filmRowMapper);
-
-        for (Film film : films) {
-            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
-            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
-            film.setLikes(likeRepository.getLikesForFilm(film));
-        }
-
-        return films;
-    }
-
-    @Override
-    public Film getFilmById(Long id) {
+    public Film getFilmById(Long filmId) {
         Film film;
-        List<Film> films = jdbcTemplate.query("SELECT * FROM film WHERE film_id=?", filmRowMapper, id);
+        List<Film> films = jdbcTemplate.query("SELECT * FROM film WHERE film_id=?", filmRowMapper, filmId);
 
         if (!films.isEmpty()) {
             film = films.get(0);
-            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
-            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
-            film.setLikes(likeRepository.getLikesForFilm(film));
         } else {
-            throw new NotFoundException("film with id = " + id + " not found");
+            throw new NotFoundException("film with id = " + filmId + " not found");
         }
 
         return film;
     }
 
     @Override
-    public Film addLike(Film film, User user) {
-        return likeRepository.addLikes(film, user);
+    public List<Film> getMostPopularFilms(Integer count) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC " +
+                          "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, count);
     }
 
-    @Override
-    public Film deleteLike(Film film, User user) {
-        return likeRepository.deleteLike(film, user);
-    }
 
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {
         Film film = new Film();

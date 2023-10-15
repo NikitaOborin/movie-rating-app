@@ -1,16 +1,13 @@
 package com.project.movieratingapp.repository.like;
 
-import com.project.movieratingapp.model.Film;
-import com.project.movieratingapp.model.User;
-
 import java.util.Set;
 
 public interface LikeRepository {
-    Film addLikes(Film film, User user);
+    void addLikes(Long filmId, Long userId);
 
-    Film deleteLike(Film film, User user);
+    void deleteLike(Long filmId, Long userId);
 
-    Set<Long> getLikesForFilm(Film film);
+    Set<Long> getLikesByFilmId(Long filmId);
 
-    Set<Long> getLikesForUser(User user);
+    Set<Long> getLikesByUserId(Long userId);
 }

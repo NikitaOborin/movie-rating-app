@@ -2,8 +2,6 @@ package com.project.movieratingapp.repository.user;
 
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.User;
-import com.project.movieratingapp.repository.friendship.FriendshipRepository;
-import com.project.movieratingapp.repository.like.LikeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,14 +19,15 @@ import java.util.Objects;
 @Repository
 public class UserDBRepository implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final FriendshipRepository friendshipRepository;
-    private final LikeRepository likeRepository;
 
     @Autowired
-    public UserDBRepository(JdbcTemplate jdbcTemplate, FriendshipRepository friendshipRepository, LikeRepository likeRepository) {
+    public UserDBRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.friendshipRepository = friendshipRepository;
-        this.likeRepository = likeRepository;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return jdbcTemplate.query("SELECT * FROM users", userRowMapper);
     }
 
     @Override
@@ -66,21 +65,7 @@ public class UserDBRepository implements UserRepository {
           throw new NotFoundException("user with id = " + user.getId() + " not found");
         }
 
-        friendshipRepository.updateFriendshipInDBForUser(user);
-
         return user;
-    }
-
-    @Override
-    public List<User> getUsers() {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users", userRowMapper);
-
-        for (User user : users) {
-            user.setFriends(friendshipRepository.getFriendshipMapForUser(user));
-            user.setFilmLikes(likeRepository.getLikesForUser(user));
-        }
-
-        return users;
     }
 
     @Override
@@ -94,9 +79,6 @@ public class UserDBRepository implements UserRepository {
             throw new NotFoundException("user with id = " + id + " not found");
         }
 
-        user.setFriends(friendshipRepository.getFriendshipMapForUser(user));
-        user.setFilmLikes(likeRepository.getLikesForUser(user));
-
         return user;
     }
 
@@ -107,6 +89,7 @@ public class UserDBRepository implements UserRepository {
         user.setLogin(rs.getString("login"));
         user.setEmail(rs.getString("email"));
         user.setBirthday(rs.getDate("birthday").toLocalDate());
+
         return user;
     };
 }

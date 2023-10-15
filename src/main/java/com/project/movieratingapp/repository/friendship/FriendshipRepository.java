@@ -5,9 +5,9 @@ import com.project.movieratingapp.model.User;
 import java.util.Map;
 
 public interface FriendshipRepository {
-    User updateFriendshipInDBForUser(User user);
+    void addFriendship(User user, Long friendId);
 
-    Map<Long, Boolean> getFriendshipMapForUser(User user);
+    void deleteFriendship(Long userId, Long friendId);
 
-    void deleteAllFriendsForUser (User user);
+    Map<Long, Boolean> getFriendsByUserId(Long userId);
 }

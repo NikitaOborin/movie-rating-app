@@ -8,13 +8,11 @@ import java.util.List;
 public interface GenreRepository {
     List<Genre> getListGenre();
 
-    Genre getGenreById(Integer genreId);
+    Genre getGenreByGenreId(Integer genreId);
 
-    List<Genre> getGenreByFilmId(Long film_id);
+    List<Genre> getGenreByFilmId(Long filmId);
 
-    void updateGenreInDbForFilm(Film film);
+    void updateGenreInDbByFilm(Film film);
 
-    void deleteGenreByFilm(Film film);
-
-    List<Genre> getListGenresWithoutDuplicate(List<Genre> genres);
+    void deleteGenreByFilmId(Long filmId);
 }

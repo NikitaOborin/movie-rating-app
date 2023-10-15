@@ -1,9 +1,10 @@
 package com.project.movieratingapp.service;
 
 import com.project.movieratingapp.model.Film;
-import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.repository.film.FilmRepository;
-import com.project.movieratingapp.repository.user.UserRepository;
+import com.project.movieratingapp.repository.genre.GenreRepository;
+import com.project.movieratingapp.repository.like.LikeRepository;
+import com.project.movieratingapp.repository.mpa.MpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,78 +16,97 @@ import java.util.*;
 @Service
 public class FilmService {
     private final FilmRepository filmRepository;
-    private final UserRepository userRepository;
+    private final GenreRepository genreRepository;
+    private final MpaRepository mpaRepository;
+    private final LikeRepository likeRepository;
 
     @Autowired
-    public FilmService(@Qualifier("filmDBRepository") FilmRepository filmRepository, @Qualifier("userDBRepository") UserRepository userRepository) {
+    public FilmService(@Qualifier("filmDBRepository") FilmRepository filmRepository,
+                                                      GenreRepository genreRepository,
+                                                      MpaRepository mpaRepository,
+                                                      LikeRepository likeRepository) {
         this.filmRepository = filmRepository;
-        this.userRepository = userRepository;
+        this.genreRepository = genreRepository;
+        this.mpaRepository = mpaRepository;
+        this.likeRepository = likeRepository;
     }
 
     public List<Film> getFilms() {
         log.info("FilmService: getFilms(): start");
-        return filmRepository.getFilms();
+        List<Film> films = filmRepository.getFilms();
+
+        for (Film film : films) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+        }
+
+        return films;
     }
 
     public Film addFilm(Film film) {
         log.info("FilmService: addFilm(): start with film={}", film);
-        return filmRepository.addFilm(film);
+        Film addedFilm =  filmRepository.addFilm(film);
+
+        genreRepository.updateGenreInDbByFilm(film);
+
+        return addedFilm;
     }
 
     public Film updateFilm(Film film) {
         log.info("FilmService: updateFilm(): start with film={}", film);
-        return filmRepository.updateFilm(film);
-    }
+        filmRepository.updateFilm(film);
 
-    public Film getFilmById(Long id) {
-        log.info("FilmService: getFilmById(): start with id={}", id);
-        return filmRepository.getFilmById(id);
-    }
+        genreRepository.updateGenreInDbByFilm(film);
 
-    public Film addLike(Long id, Long userId) {
-        log.info("FilmService: addLike(): start with id={}, userId={}", id, userId);
-        Film film = filmRepository.getFilmById(id);
-        User user = userRepository.getUserById(userId);
-
-        film.getLikes().add(user.getId());
-        user.getFilmLikes().add(film.getId());
-
-        filmRepository.addLike(film, user);
+        film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
 
         return film;
     }
 
-    public Film deleteLike(Long id, Long userId) {
-        log.info("FilmService: deleteLike(): start with id={}, userId={}", id, userId);
+    public Film getFilmById(Long id) {
+        log.info("FilmService: getFilmById(): start with id={}", id);
         Film film = filmRepository.getFilmById(id);
-        User user = userRepository.getUserById(userId);
+
+        film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+        film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+        film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+
+        return film;
+    }
+
+    public Film addLike(Long filmId, Long userId) {
+        log.info("FilmService: addLike(): start with id={}, userId={}", filmId, userId);
+        Film film = filmRepository.getFilmById(filmId);
+
+        film.getLikes().add(userId);
+
+        likeRepository.addLikes(filmId, userId);
+
+        return film;
+    }
+
+    public Film deleteLike(Long filmId, Long userId) {
+        log.info("FilmService: deleteLike(): start with id={}, userId={}", filmId, userId);
+        Film film = filmRepository.getFilmById(filmId);
 
         film.getLikes().remove(userId);
-        user.getFilmLikes().remove(film.getId());
 
-        filmRepository.deleteLike(film, user);
+        likeRepository.deleteLike(filmId, userId);
 
         return film;
     }
 
     public List<Film> getMostPopularFilms(Integer count) {
         log.info("FilmService: getMostPopularFilms(): start with count={}", count);
-        List<Film> films = filmRepository.getFilms();
-        List<Film> mostPopularFilms = new ArrayList<>();
+        List<Film> mostPopularFilm = filmRepository.getMostPopularFilms(count);
 
-        films.sort(new Comparator<Film>() {
-            @Override
-            public int compare(Film o1, Film o2) {
-                return o2.getLikes().size() - o1.getLikes().size();
-            }
-        });
-
-        for (Film film : films) {
-           if (mostPopularFilms.size() < count) {
-               mostPopularFilms.add(film);
-           }
+        for (Film film : mostPopularFilm) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
         }
 
-        return mostPopularFilms;
+        return mostPopularFilm;
     }
 }
