@@ -16,15 +16,20 @@ import java.util.Set;
 @Data
 public class User {
     private Long id;
+
     @Email
     @NotEmpty
     private String email;
+
     @NotBlank
     private String login;
+
     private String name; // может быть пустым, в таком случае использовать логин
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent
     private LocalDate birthday;
+
     private Map<Long, Boolean> friends = new HashMap<>(); // статус: подтвержденная или не подтвержденная дружба с пользователем
     private Set<Long> filmLikes = new HashSet<>();
 }

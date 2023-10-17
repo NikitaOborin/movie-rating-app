@@ -14,16 +14,21 @@ import java.util.Set;
 @Data
 public class Film {
     private Long id;
+
     @NotEmpty
     private String name;
+
     @Size (min = 1, max = 200)
     private String description;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent
     @BirthdayMovie // кастомная аннотация
     private LocalDate releaseDate;
+
     @Positive
     private Integer duration;
+
     private Set<Long> likes = new HashSet<>();
     private List<Genre> genres = new ArrayList<>();;
     private Mpa mpa;

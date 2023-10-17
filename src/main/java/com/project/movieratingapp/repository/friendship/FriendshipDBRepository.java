@@ -27,7 +27,7 @@ public class FriendshipDBRepository implements FriendshipRepository {
         deleteFriendship(user.getId(), friendId);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sqlQuery = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, ?)";
+        String sqlQuery = "INSERT INTO friendship (user_id, friend_id, is_approved) VALUES (?, ?, ?)";
         Boolean friendshipStatus = user.getFriends().get(friendId);
 
         jdbcTemplate.update(connection -> {
@@ -48,7 +48,7 @@ public class FriendshipDBRepository implements FriendshipRepository {
     @Override
     public Map<Long, Boolean> getFriendsByUserId(Long userId) {
         Map<Long, Boolean> friendshipMap = new HashMap<>();
-        String sqlString = "SELECT friend_id, status FROM friendship WHERE user_id=?";
+        String sqlString = "SELECT friend_id, is_approved FROM friendship WHERE user_id=?";
         List<Map<Long, Boolean>> listFriendshipMap = jdbcTemplate.query(sqlString, rowMapperFriendship, userId);
 
         for (Map<Long, Boolean> friendshipStatus : listFriendshipMap) {
@@ -69,7 +69,7 @@ public class FriendshipDBRepository implements FriendshipRepository {
     private final RowMapper<Map<Long, Boolean>> rowMapperFriendship = (rs, rowNum) -> {
         Map<Long, Boolean> friendshipMap = new HashMap<>();
         Long key = rs.getLong("friend_id");
-        Boolean value = rs.getBoolean("status");
+        Boolean value = rs.getBoolean("is_approved");
         friendshipMap.put(key, value);
 
       return friendshipMap;
