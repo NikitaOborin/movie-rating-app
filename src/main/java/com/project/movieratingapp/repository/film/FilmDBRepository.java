@@ -91,6 +91,29 @@ public class FilmDBRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, filmRowMapper, count);
     }
 
+    @Override
+    public List<Film> getFilmsByDirectorIdSortByYear(Integer directorId) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "INNER JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                          "WHERE fd.director_id=? " +
+                          "ORDER BY EXTRACT(YEAR FROM f.release_date)";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, directorId);
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorIdSortByLikes(Integer directorId) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "INNER JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "WHERE fd.director_id=? " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, directorId);
+    }
 
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {
         Film film = new Film();

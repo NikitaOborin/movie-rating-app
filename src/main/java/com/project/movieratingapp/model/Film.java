@@ -22,7 +22,6 @@ public class Film {
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @PastOrPresent
     @BirthdayMovie // кастомная аннотация
     private LocalDate releaseDate;
 
@@ -30,6 +29,7 @@ public class Film {
     private Integer duration;
 
     private Set<Long> likes = new HashSet<>();
-    private List<Genre> genres = new ArrayList<>();;
+    private List<Genre> genres = new ArrayList<>();
+    private List<Director> directors = new ArrayList<>();
     private Mpa mpa;
 }
