@@ -72,4 +72,14 @@ public class FilmInMemoryRepository implements FilmRepository {
 
         return mostPopularFilms;
     }
+
+    @Override
+    public List<Film> getFilmsByDirectorIdSortByYear(Integer directorId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorIdSortByLikes(Integer directorId) {
+        return null;
+    }
 }

@@ -1,6 +1,8 @@
 package com.project.movieratingapp.service;
 
+import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
+import com.project.movieratingapp.repository.director.DirectorRepository;
 import com.project.movieratingapp.repository.film.FilmRepository;
 import com.project.movieratingapp.repository.genre.GenreRepository;
 import com.project.movieratingapp.repository.like.LikeRepository;
@@ -19,16 +21,18 @@ public class FilmService {
     private final GenreRepository genreRepository;
     private final MpaRepository mpaRepository;
     private final LikeRepository likeRepository;
+    private final DirectorRepository directorRepository;
 
     @Autowired
     public FilmService(@Qualifier("filmDBRepository") FilmRepository filmRepository,
-                                                      GenreRepository genreRepository,
-                                                      MpaRepository mpaRepository,
-                                                      LikeRepository likeRepository) {
+                       GenreRepository genreRepository,
+                       MpaRepository mpaRepository,
+                       LikeRepository likeRepository, DirectorRepository directorRepository) {
         this.filmRepository = filmRepository;
         this.genreRepository = genreRepository;
         this.mpaRepository = mpaRepository;
         this.likeRepository = likeRepository;
+        this.directorRepository = directorRepository;
     }
 
     public List<Film> getFilms() {
@@ -39,6 +43,7 @@ public class FilmService {
             film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
             film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
             film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
         }
 
         return films;
@@ -49,6 +54,7 @@ public class FilmService {
         Film addedFilm =  filmRepository.addFilm(film);
 
         genreRepository.updateGenreInDbByFilm(film);
+        directorRepository.updateDirectorInDbByFilm(film);
 
         return addedFilm;
     }
@@ -58,8 +64,10 @@ public class FilmService {
         filmRepository.updateFilm(film);
 
         genreRepository.updateGenreInDbByFilm(film);
+        directorRepository.updateDirectorInDbByFilm(film);
 
         film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+        film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
 
         return film;
     }
@@ -71,6 +79,7 @@ public class FilmService {
         film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
         film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
         film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+        film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
 
         return film;
     }
@@ -105,8 +114,32 @@ public class FilmService {
             film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
             film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
             film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
         }
 
         return mostPopularFilm;
+    }
+
+    public List<Film> getFilmsByDirectorId(Integer directorId, String sortBy) {
+        List<Film> films = new ArrayList<>();
+
+        if (sortBy.equals("year")) {
+            films = filmRepository.getFilmsByDirectorIdSortByYear(directorId);
+        } else if (sortBy.equals("likes")) {
+            films = filmRepository.getFilmsByDirectorIdSortByLikes(directorId);
+        }
+
+        if (films.isEmpty()) {
+            throw new NotFoundException("films with directorId = " + directorId + " not found");
+        }
+
+        for (Film film : films) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
+        }
+
+        return films;
     }
 }
