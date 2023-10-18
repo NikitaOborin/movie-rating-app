@@ -69,4 +69,11 @@ public class FilmController {
         log.info("FilmController: getFilmsByDirectorId(): start with directorId={}", directorId);
         return filmService.getFilmsByDirectorId(directorId, sortBy);
     }
+
+    @GetMapping("/search")
+    public List<Film> getFilmsWithSubstring(@RequestParam(required = false) String query,
+                                            @RequestParam(required = false) String by) {
+        log.info("FilmController: getFilmsWithSubstring(): start");
+        return filmService.getFilmsWithSubstring(query, by);
+    }
 }

@@ -18,4 +18,10 @@ public interface FilmRepository {
     List<Film> getFilmsByDirectorIdSortByYear(Integer directorId);
 
     List<Film> getFilmsByDirectorIdSortByLikes(Integer directorId);
+
+    List<Film> getFilmsWithSubstringInDirector(String query);
+
+    List<Film> getFilmsWithSubstringInTitle(String query);
+
+    List<Film> getFilmsWithSubstringInDirectorAndTitle(String query);
 }

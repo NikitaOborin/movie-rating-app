@@ -142,4 +142,28 @@ public class FilmService {
 
         return films;
     }
+
+    public List<Film> getFilmsWithSubstring(String query, String by) {
+        List<Film> films = new ArrayList<>();
+        String lowerCaseQuery = query.toLowerCase();
+
+        if (query.isEmpty() && by.isEmpty()) {
+            films = getMostPopularFilms(Integer.MAX_VALUE);
+        } else if (by.equals("director")) {
+            films = filmRepository.getFilmsWithSubstringInDirector(lowerCaseQuery);
+        } else if (by.equals("title")) {
+            films = filmRepository.getFilmsWithSubstringInTitle(lowerCaseQuery);
+        } else if (by.equals("director,title") || by.equals("title,director")) {
+            films = filmRepository.getFilmsWithSubstringInDirectorAndTitle(lowerCaseQuery);
+        }
+
+        for (Film film : films) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
+        }
+
+        return films;
+    }
 }

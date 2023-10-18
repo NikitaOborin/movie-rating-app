@@ -115,6 +115,48 @@ public class FilmDBRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, filmRowMapper, directorId);
     }
 
+    @Override
+    public List<Film> getFilmsWithSubstringInDirector(String query) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                              "LEFT JOIN director AS d ON fd.director_id = d.director_id " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "WHERE LOWER(d.name) LIKE '%" + query + "%' " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper);
+    }
+
+    @Override
+    public List<Film> getFilmsWithSubstringInTitle(String query) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                              "LEFT JOIN director AS d ON fd.director_id = d.director_id " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "WHERE LOWER(f.name) LIKE '%" + query + "%' " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper);
+    }
+
+    @Override
+    public List<Film> getFilmsWithSubstringInDirectorAndTitle(String query) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN film_director AS fd ON f.film_id = fd.film_id " +
+                              "LEFT JOIN director AS d ON fd.director_id = d.director_id " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "WHERE LOWER(f.name) LIKE '%" + query + "%' OR LOWER(d.name) LIKE '%" + query + "%' " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper);
+    }
+
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {
         Film film = new Film();
         Mpa mpa = new Mpa();

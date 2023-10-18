@@ -82,4 +82,19 @@ public class FilmInMemoryRepository implements FilmRepository {
     public List<Film> getFilmsByDirectorIdSortByLikes(Integer directorId) {
         return null;
     }
+
+    @Override
+    public List<Film> getFilmsWithSubstringInDirector(String query) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsWithSubstringInTitle(String query) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsWithSubstringInDirectorAndTitle(String query) {
+        return null;
+    }
 }
