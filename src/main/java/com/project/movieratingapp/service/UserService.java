@@ -1,8 +1,13 @@
 package com.project.movieratingapp.service;
 
+import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
+import com.project.movieratingapp.repository.director.DirectorRepository;
+import com.project.movieratingapp.repository.film.FilmRepository;
 import com.project.movieratingapp.repository.friendship.FriendshipRepository;
+import com.project.movieratingapp.repository.genre.GenreRepository;
 import com.project.movieratingapp.repository.like.LikeRepository;
+import com.project.movieratingapp.repository.mpa.MpaRepository;
 import com.project.movieratingapp.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +25,26 @@ public class UserService {
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
     private final LikeRepository likeRepository;
+    private final FilmRepository filmRepository;
+    private final GenreRepository genreRepository;
+    private final MpaRepository mpaRepository;
+    private final DirectorRepository directorRepository;
 
     @Autowired
     public UserService(@Qualifier("userDBRepository") UserRepository userRepository,
+                       @Qualifier("filmDBRepository") FilmRepository filmRepository,
                                                       FriendshipRepository friendshipRepository,
-                                                      LikeRepository likeRepository) {
+                                                      LikeRepository likeRepository,
+                                                      GenreRepository genreRepository,
+                                                      MpaRepository mpaRepository,
+                                                      DirectorRepository directorRepository) {
         this.userRepository = userRepository;
+        this.filmRepository = filmRepository;
         this.friendshipRepository = friendshipRepository;
         this.likeRepository = likeRepository;
+        this.genreRepository = genreRepository;
+        this.mpaRepository = mpaRepository;
+        this.directorRepository = directorRepository;
     }
 
     public List<User> getUsers() {
@@ -128,5 +145,19 @@ public class UserService {
         }
 
         return mutualFriends;
+    }
+
+    public List<Film> getFilmsRecommendationsByUserId(Long userId) {
+        log.info("UserService: getFilmsRecommendationsByUserId(): start with userId={}=", userId);
+        List<Film> filmsRecommendation = filmRepository.getFilmsRecommendation(userId);
+
+        for (Film film : filmsRecommendation) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
+        }
+
+        return filmsRecommendation;
     }
 }

@@ -1,5 +1,6 @@
 package com.project.movieratingapp.controller;
 
+import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.service.UserService;
 import jakarta.validation.Valid;
@@ -68,5 +69,11 @@ public class UserController {
     public List<User> getMutualFriends(@PathVariable Long id, @PathVariable Long otherId) {
         log.info("UserController: getMutualFriends(): start with id={}, otherId={}", id, otherId);
         return userService.getMutualFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getFilmsRecommendationsByUserId(@PathVariable Long id) {
+        log.info("UserController: getFilmsRecommendationsByUserId(): start with id={}", id);
+        return userService.getFilmsRecommendationsByUserId(id);
     }
 }

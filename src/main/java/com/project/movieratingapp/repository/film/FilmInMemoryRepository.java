@@ -102,4 +102,9 @@ public class FilmInMemoryRepository implements FilmRepository {
     public List<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
         return null;
     }
+
+    @Override
+    public List<Film> getFilmsRecommendation(Long userId) {
+        return null;
+    }
 }
