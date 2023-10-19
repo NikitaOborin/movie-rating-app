@@ -26,4 +26,6 @@ public interface FilmRepository {
     List<Film> getFilmsWithSubstringInDirectorAndTitle(String query);
 
     List<Film> getCommonFilmsWithFriend(Long userId, Long friendId);
+
+    List<Film> getFilmsRecommendation(Long userId);
 }

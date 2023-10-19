@@ -169,6 +169,28 @@ public class FilmDBRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, filmRowMapper, userId, friendId);
     }
 
+    @Override
+    public List<Film> getFilmsRecommendation(Long userId) {
+
+        /*
+        Пояснения по sqlQuery, распишем работу вложенных запросов начиная с конца:
+            Первый вложенный запрос - достает id фильмов, которые лайкал пользователь с id = user_id;
+            Второй запрос - достает id всех пользователей, которые также лайкали эти фильмы (исключая пользователя с id = user_id);
+            Третий запрос - достает id всех фильмов, которые лайкали полученные пользователи;
+            Четвертый запрос - исключает из условия поиска те фильмы, которые лайкал пользователь с id = user_id.
+         */
+
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                          "WHERE f.film_id IN (SELECT film_id FROM likes " +
+                                              "WHERE user_id IN (SELECT user_id FROM likes " +
+                                                                "WHERE user_id !=? AND film_id IN (SELECT film_id FROM likes " +
+                                                                                                  "WHERE user_id=?))) " +
+                              "AND f.film_id NOT IN (SELECT film_id FROM likes WHERE user_id=?)";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, userId, userId, userId);
+    }
+
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {
         Film film = new Film();
         Mpa mpa = new Mpa();
