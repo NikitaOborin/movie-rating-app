@@ -157,6 +157,18 @@ public class FilmDBRepository implements FilmRepository {
         return jdbcTemplate.query(sqlQuery, filmRowMapper);
     }
 
+    @Override
+    public List<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                          "WHERE f.film_id IN (SELECT l.film_id " +
+                                              "FROM likes AS l " +
+                                              "WHERE l.user_id=? AND l.film_id IN (SELECT l.film_id " +
+                                                                                  "FROM likes AS l " +
+                                                                                  "WHERE l.user_id=?))" ;
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, userId, friendId);
+    }
+
     private final RowMapper<Film> filmRowMapper = (rs, rowNum) -> {
         Film film = new Film();
         Mpa mpa = new Mpa();

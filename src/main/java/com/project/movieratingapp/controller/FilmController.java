@@ -76,4 +76,10 @@ public class FilmController {
         log.info("FilmController: getFilmsWithSubstring(): start");
         return filmService.getFilmsWithSubstring(query, by);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilmsWithFriend(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("FilmController: getFilmsByDirectorId(): start with userId={}, friendId={}", userId, friendId);
+        return filmService.getCommonFilmsWithFriend(userId, friendId);
+    }
 }
