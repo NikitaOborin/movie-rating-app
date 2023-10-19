@@ -97,4 +97,9 @@ public class FilmInMemoryRepository implements FilmRepository {
     public List<Film> getFilmsWithSubstringInDirectorAndTitle(String query) {
         return null;
     }
+
+    @Override
+    public List<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
+        return null;
+    }
 }

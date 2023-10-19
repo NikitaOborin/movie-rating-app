@@ -166,4 +166,19 @@ public class FilmService {
 
         return films;
     }
+
+    public List<Film> getCommonFilmsWithFriend(Long userId, Long friendId) {
+        List<Film> commonFilms = new ArrayList<>();
+
+        commonFilms =  filmRepository.getCommonFilmsWithFriend(userId, friendId);
+
+        for (Film film : commonFilms) {
+            film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
+            film.setMpa(mpaRepository.getMpaByFilmId(film.getId()));
+            film.setLikes(likeRepository.getLikesByFilmId(film.getId()));
+            film.setDirectors(directorRepository.getDirectorsByFilmId(film.getId()));
+        }
+
+        return commonFilms;
+    }
 }
