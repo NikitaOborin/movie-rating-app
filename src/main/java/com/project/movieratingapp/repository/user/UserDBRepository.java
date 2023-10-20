@@ -82,6 +82,11 @@ public class UserDBRepository implements UserRepository {
         return user;
     }
 
+    @Override
+    public void deleteUserById(Long userId) {
+        jdbcTemplate.update("DELETE FROM users WHERE user_id=?", userId);
+    }
+
     private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
         User user = new User();
         user.setId(rs.getLong("user_id"));

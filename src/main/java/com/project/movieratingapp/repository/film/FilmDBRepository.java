@@ -80,6 +80,11 @@ public class FilmDBRepository implements FilmRepository {
     }
 
     @Override
+    public void deleteFilmById(Long filmId) {
+        jdbcTemplate.update("DELETE FROM film WHERE film_id=?", filmId);
+    }
+
+    @Override
     public List<Film> getMostPopularFilms(Integer count) {
         String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
                           "FROM film AS f " +

@@ -89,6 +89,10 @@ public class FilmService {
         return film;
     }
 
+    public void deleteFilmById(Long filmId) {
+        filmRepository.deleteFilmById(filmId);
+    }
+
     public Film addLike(Long filmId, Long userId) {
         log.info("FilmService: addLike(): start with id={}, userId={}", filmId, userId);
         Film film = filmRepository.getFilmById(filmId);

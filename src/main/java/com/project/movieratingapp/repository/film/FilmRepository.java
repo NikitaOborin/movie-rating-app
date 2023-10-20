@@ -13,6 +13,8 @@ public interface FilmRepository {
 
     Film getFilmById(Long filmId);
 
+    void deleteFilmById(Long filmId);
+
     List<Film> getMostPopularFilms(Integer count);
 
     List<Film> getFilmsByDirectorIdSortByYear(Integer directorId);

@@ -53,6 +53,11 @@ public class FilmInMemoryRepository implements FilmRepository {
     }
 
     @Override
+    public void deleteFilmById(Long filmId) {
+
+    }
+
+    @Override
     public List<Film> getMostPopularFilms(Integer count) {
         List<Film> filmList = (List<Film>) films.values();
         List<Film> mostPopularFilms = new ArrayList<>();
