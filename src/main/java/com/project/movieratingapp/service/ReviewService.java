@@ -3,9 +3,12 @@ package com.project.movieratingapp.service;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.Review;
 import com.project.movieratingapp.model.User;
+import com.project.movieratingapp.repository.event.EventRepository;
 import com.project.movieratingapp.repository.film.FilmRepository;
 import com.project.movieratingapp.repository.review.ReviewRepository;
 import com.project.movieratingapp.repository.user.UserRepository;
+import com.project.movieratingapp.util.EventType;
+import com.project.movieratingapp.util.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,25 +22,36 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final FilmRepository filmRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository,
-                         @Qualifier("userDBRepository") UserRepository userRepository,
-                         @Qualifier("filmDBRepository") FilmRepository filmRepository) {
-        this.reviewRepository = reviewRepository;
+    public ReviewService(@Qualifier("userDBRepository") UserRepository userRepository,
+                         @Qualifier("filmDBRepository") FilmRepository filmRepository,
+                                                        ReviewRepository reviewRepository,
+                                                        EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.filmRepository = filmRepository;
+        this.reviewRepository = reviewRepository;
+        this.eventRepository = eventRepository;
     }
 
     public Review addReview(Review review) {
         User user = userRepository.getUserById(review.getUserId());
         Film film = filmRepository.getFilmById(review.getFilmId());
 
-        return reviewRepository.addReview(review);
+        review = reviewRepository.addReview(review);
+
+        eventRepository.addEventForUserByEntityId(user.getId(), review.getReviewId(), EventType.REVIEW.toString(), OperationType.ADD.toString());
+
+        return review;
     }
 
     public Review updateReview(Review review) {
-        return reviewRepository.updateReview(review);
+        review = reviewRepository.updateReview(review);
+
+        eventRepository.addEventForUserByEntityId(review.getUserId(), review.getReviewId(), EventType.REVIEW.toString(), OperationType.UPDATE.toString());
+
+        return review;
     }
 
     public Review getReviewById(Long reviewId) {
@@ -45,7 +59,11 @@ public class ReviewService {
     }
 
     public void deleteReviewById(Long reviewId) {
+        Review review = reviewRepository.getReviewById(reviewId);
+
         reviewRepository.deleteReviewById(reviewId);
+
+        eventRepository.addEventForUserByEntityId(review.getUserId(), reviewId, EventType.REVIEW.toString(), OperationType.REMOVE.toString());
     }
 
     public List<Review> getReviews(Long filmId, Integer count) {

@@ -1,14 +1,18 @@
 package com.project.movieratingapp.service;
 
+import com.project.movieratingapp.model.Event;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.repository.director.DirectorRepository;
+import com.project.movieratingapp.repository.event.EventRepository;
 import com.project.movieratingapp.repository.film.FilmRepository;
 import com.project.movieratingapp.repository.friendship.FriendshipRepository;
 import com.project.movieratingapp.repository.genre.GenreRepository;
 import com.project.movieratingapp.repository.like.LikeRepository;
 import com.project.movieratingapp.repository.mpa.MpaRepository;
 import com.project.movieratingapp.repository.user.UserRepository;
+import com.project.movieratingapp.util.EventType;
+import com.project.movieratingapp.util.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,15 +33,16 @@ public class UserService {
     private final GenreRepository genreRepository;
     private final MpaRepository mpaRepository;
     private final DirectorRepository directorRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
     public UserService(@Qualifier("userDBRepository") UserRepository userRepository,
                        @Qualifier("filmDBRepository") FilmRepository filmRepository,
-                                                      FriendshipRepository friendshipRepository,
-                                                      LikeRepository likeRepository,
-                                                      GenreRepository genreRepository,
-                                                      MpaRepository mpaRepository,
-                                                      DirectorRepository directorRepository) {
+                       FriendshipRepository friendshipRepository,
+                       LikeRepository likeRepository,
+                       GenreRepository genreRepository,
+                       MpaRepository mpaRepository,
+                       DirectorRepository directorRepository, EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.filmRepository = filmRepository;
         this.friendshipRepository = friendshipRepository;
@@ -45,6 +50,7 @@ public class UserService {
         this.genreRepository = genreRepository;
         this.mpaRepository = mpaRepository;
         this.directorRepository = directorRepository;
+        this.eventRepository = eventRepository;
     }
 
     public List<User> getUsers() {
@@ -96,6 +102,9 @@ public class UserService {
             friendshipRepository.addFriendship(user, friendId);
         }
 
+        eventRepository.addEventForUserByEntityId(userId, friendId, EventType.FRIEND.toString(),
+                                                                    OperationType.ADD.toString());
+
         return user;
     }
 
@@ -110,6 +119,9 @@ public class UserService {
         }
 
         user.setFriends(friendshipRepository.getFriendsByUserId(userId));
+
+        eventRepository.addEventForUserByEntityId(userId, friendId, EventType.FRIEND.toString(),
+                                                                    OperationType.REMOVE.toString());
 
         return user;
     }
@@ -159,5 +171,11 @@ public class UserService {
         }
 
         return filmsRecommendation;
+    }
+
+    public List<Event> getEventFeedByUserId(Long userId) {
+        userRepository.getUserById(userId);
+
+        return eventRepository.getEventFeedByUserId(userId);
     }
 }
