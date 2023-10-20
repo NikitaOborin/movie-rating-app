@@ -17,6 +17,12 @@ public interface FilmRepository {
 
     List<Film> getMostPopularFilms(Integer count);
 
+    List<Film> getMostPopularFilmsByGenreId(Integer count, Integer genreId);
+
+    List<Film> getMostPopularFilmsByYear(Integer count, Integer year);
+
+    List<Film> getMostPopularFilmsByGenreIdAndYear(Integer count, Integer genreId, Integer year);
+
     List<Film> getFilmsByDirectorIdSortByYear(Integer directorId);
 
     List<Film> getFilmsByDirectorIdSortByLikes(Integer directorId);

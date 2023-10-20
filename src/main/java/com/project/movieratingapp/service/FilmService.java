@@ -119,9 +119,19 @@ public class FilmService {
         return film;
     }
 
-    public List<Film> getMostPopularFilms(Integer count) {
+    public List<Film> getMostPopularFilms(Integer count, Integer genreId, Integer year) {
         log.info("FilmService: getMostPopularFilms(): start with count={}", count);
-        List<Film> mostPopularFilm = filmRepository.getMostPopularFilms(count);
+        List<Film> mostPopularFilm = new ArrayList<>();
+
+        if (genreId == null && year == null) {
+            mostPopularFilm = filmRepository.getMostPopularFilms(count);
+        } else if (genreId != null && year != null) {
+            mostPopularFilm = filmRepository.getMostPopularFilmsByGenreIdAndYear(count, genreId, year);
+        } else if (genreId != null) {
+            mostPopularFilm = filmRepository.getMostPopularFilmsByGenreId(count, genreId);
+        } else if (year != null) {
+            mostPopularFilm = filmRepository.getMostPopularFilmsByYear(count, year);
+        }
 
         for (Film film : mostPopularFilm) {
             film.setGenres(genreRepository.getGenreByFilmId(film.getId()));
@@ -161,7 +171,7 @@ public class FilmService {
         String lowerCaseQuery = query.toLowerCase();
 
         if (query.isEmpty() && by.isEmpty()) {
-            films = getMostPopularFilms(Integer.MAX_VALUE);
+            films = getMostPopularFilms(Integer.MAX_VALUE, null, null);
         } else if (by.equals("director")) {
             films = filmRepository.getFilmsWithSubstringInDirector(lowerCaseQuery);
         } else if (by.equals("title")) {

@@ -97,6 +97,47 @@ public class FilmDBRepository implements FilmRepository {
     }
 
     @Override
+    public List<Film> getMostPopularFilmsByGenreId(Integer count, Integer genreId) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                              "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                          "WHERE fg.genre_id=? " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC " +
+                          "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, genreId, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularFilmsByYear(Integer count, Integer year) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                          "WHERE EXTRACT(YEAR FROM f.release_date)=? " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC " +
+                          "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, year, count);
+    }
+
+    @Override
+    public List<Film> getMostPopularFilmsByGenreIdAndYear(Integer count, Integer genreId, Integer year) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
+                          "FROM film AS f " +
+                              "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                              "LEFT JOIN film_genre AS fg ON f.film_id = fg.film_id " +
+                          "WHERE fg.genre_id=? AND EXTRACT(YEAR FROM f.release_date)=? " +
+                          "GROUP BY f.film_id " +
+                          "ORDER BY COUNT(l.user_id) DESC " +
+                          "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, filmRowMapper, genreId, year, count);
+    }
+
+    @Override
     public List<Film> getFilmsByDirectorIdSortByYear(Integer directorId) {
         String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id " +
                           "FROM film AS f " +
