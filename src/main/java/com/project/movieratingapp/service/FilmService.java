@@ -3,10 +3,13 @@ package com.project.movieratingapp.service;
 import com.project.movieratingapp.exception.NotFoundException;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.repository.director.DirectorRepository;
+import com.project.movieratingapp.repository.event.EventRepository;
 import com.project.movieratingapp.repository.film.FilmRepository;
 import com.project.movieratingapp.repository.genre.GenreRepository;
 import com.project.movieratingapp.repository.like.LikeRepository;
 import com.project.movieratingapp.repository.mpa.MpaRepository;
+import com.project.movieratingapp.util.EventType;
+import com.project.movieratingapp.util.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,17 +25,19 @@ public class FilmService {
     private final MpaRepository mpaRepository;
     private final LikeRepository likeRepository;
     private final DirectorRepository directorRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
     public FilmService(@Qualifier("filmDBRepository") FilmRepository filmRepository,
                        GenreRepository genreRepository,
                        MpaRepository mpaRepository,
-                       LikeRepository likeRepository, DirectorRepository directorRepository) {
+                       LikeRepository likeRepository, DirectorRepository directorRepository, EventRepository eventRepository) {
         this.filmRepository = filmRepository;
         this.genreRepository = genreRepository;
         this.mpaRepository = mpaRepository;
         this.likeRepository = likeRepository;
         this.directorRepository = directorRepository;
+        this.eventRepository = eventRepository;
     }
 
     public List<Film> getFilms() {
@@ -92,6 +97,8 @@ public class FilmService {
 
         likeRepository.addLikes(filmId, userId);
 
+        eventRepository.addEventForUserByEntityId(userId, filmId, EventType.LIKE.toString(), OperationType.ADD.toString());
+
         return film;
     }
 
@@ -102,6 +109,8 @@ public class FilmService {
         film.getLikes().remove(userId);
 
         likeRepository.deleteLike(filmId, userId);
+
+        eventRepository.addEventForUserByEntityId(userId, filmId, EventType.LIKE.toString(), OperationType.REMOVE.toString());
 
         return film;
     }

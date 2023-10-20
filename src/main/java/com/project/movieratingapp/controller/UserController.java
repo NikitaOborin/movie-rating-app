@@ -1,5 +1,6 @@
 package com.project.movieratingapp.controller;
 
+import com.project.movieratingapp.model.Event;
 import com.project.movieratingapp.model.Film;
 import com.project.movieratingapp.model.User;
 import com.project.movieratingapp.service.UserService;
@@ -75,5 +76,10 @@ public class UserController {
     public List<Film> getFilmsRecommendationsByUserId(@PathVariable Long id) {
         log.info("UserController: getFilmsRecommendationsByUserId(): start with id={}", id);
         return userService.getFilmsRecommendationsByUserId(id);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Event> getEventFeedByUserId(@PathVariable Long id) {
+        return userService.getEventFeedByUserId(id);
     }
 }
