@@ -58,4 +58,9 @@ public class UserInMemoryRepository implements UserRepository {
             throw new NotFoundException("user with id = " + id + " not found");
         }
     }
+
+    @Override
+    public void deleteUserById(Long userId) {
+
+    }
 }

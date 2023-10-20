@@ -85,6 +85,10 @@ public class UserService {
         return user;
     }
 
+    public void deleteUserById(Long userId) {
+        userRepository.deleteUserById(userId);
+    }
+
     public User addFriend(Long userId, Long friendId) {
         log.info("UserService: addFriend(): start with id={}, friendId={}", userId, friendId);
         User user = getUserById(userId);
@@ -128,6 +132,8 @@ public class UserService {
 
     public List<User> getUserFriends(Long userId) {
         log.info("UserService: getUserFriends(): start with id={}", userId);
+        userRepository.getUserById(userId);
+
         Map<Long, Boolean> getFriendsByUserId = friendshipRepository.getFriendsByUserId(userId);
         Set<Long> userFriendsId = getFriendsByUserId.keySet();
 
